@@ -1,48 +1,61 @@
 <script>
 	import FileDrop from "filedrop-svelte";
-	let files = null;
-</script>
 
-<FileDrop on:filedrop={(e) => {
-          console.log(e);
-          files = e.detail.files;
+    async function uploadFile(file) {
+          const name = file.name;
+          const ext = (name.indexOf('.') < 0) ? "" : name.split('.').pop();
+          const baseURL = "http://0.0.0.0:3000";
+          const url = `${baseURL}/upload`
 
-          let file = files.accepted[0];
-          let name = file.name;
-          let ext = name.split('.').pop();
+          function b2h(buffer) {
+              return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+          }
+          const FILE_HASH = b2h(await crypto.subtle.digest('SHA-256', await file.arrayBuffer())); // output: the sha256 digest hex encoded of the file
 
-          let url = (ext === name) ?
-              "http://0.0.0.0:3000/upload"
-              :
-              `http://0.0.0.0:3000/upload/${ext}`
+          const event = {
+              content: "",
+              kind: 27235,
+              created_at: Math.floor(Date.now() /1000),
+              tags: [
+                ["u", url],
+                ["method", "POST"],
+                ["ext", ext],
+                ["payload", FILE_HASH]
+              ]
+          };
 
-          fetch(
-              url,
+          const signedEvent = await window.nostr.signEvent(event);
+          const b64OfSignedEvent = btoa(JSON.stringify(signedEvent));
+          const data =
               {
                 method: "POST",
-                mode: "no-cors",
-                body: files.accepted[0]
-              }
-          ).then((response) => {
-            console.log(response);
-          }).catch((e) => {
-            console.log(e);
-            });
+                headers: {
+                  "Authorization": `Nostr ${b64OfSignedEvent}`,
+                },
+                body: file
+              };
+
+          let res = await fetch(url,data);
+          let text = await res.text();
+
+          return {
+             filename: file.name,
+             status: res.statusText,
+             response: text,
+          }
+    }
+
+
+	let results = [];
+</script>
+
+<FileDrop on:filedrop={async (e) => {
+          results = await Promise.all(e.detail.files.accepted.map(uploadFile));
 }}>
         Upload files
 </FileDrop>
 
-{#if files}
-	<h3>Accepted files</h3>
-	<ul>
-		{#each files.accepted as file}
-			<li>{file.name}</li>
-		{/each}
-	</ul>
-	<h3>Rejected files</h3>
-	<ul>
-		{#each files.rejected as rejected}
-			<li>{rejected.file.name} - {rejected.error.message}</li>
-		{/each}
-	</ul>
-{/if}
+<h1>Results</h1>
+{#each results as result}
+    <p>{result.filename} - {result.status} - {result.response}</p>
+{/each}
