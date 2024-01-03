@@ -1,14 +1,11 @@
 FROM node:alpine AS build
 
 WORKDIR /app
-
 COPY . ./
-RUN npm install
+RUN npm ci
 RUN npm run build
+RUN rm -rf src/ static/
 
-FROM nginx:alpine
+USER node:node
 
-WORKDIR /usr/share/nginx/html
-RUN rm -rf ./*
-COPY --from=build /app/build .
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+CMD ["node", "build/index.js"]
