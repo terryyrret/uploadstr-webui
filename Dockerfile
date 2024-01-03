@@ -1,12 +1,14 @@
-FROM node:12 AS build
+FROM node:alpine AS build
 
 WORKDIR /app
 
-COPY package.json ./
-COPY package-lock.json ./
-RUN npm install
 COPY . ./
+RUN npm install
 RUN npm run build
 
-FROM nginx:1.19-alpine
-COPY --from=build /app/public /usr/share/nginx/html
+FROM nginx:alpine
+
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+COPY --from=build /app/build .
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
