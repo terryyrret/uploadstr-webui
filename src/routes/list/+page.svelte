@@ -1,6 +1,6 @@
 <script>
 	import { Button, Card, Divider, Group, Image, Text, Title } from '@svelteuidev/core';
-	import { deleteFile, getFiles } from '../../server';
+	import { deleteFile, getFiles } from '$lib/requests';
 
 	async function get() {
 		let res = await getFiles();

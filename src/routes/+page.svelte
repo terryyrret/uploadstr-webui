@@ -1,6 +1,6 @@
 <script>
 	import FileDrop from 'filedrop-svelte';
-	import { uploadFile } from '../server';
+	import { uploadFile } from '$lib/requests';
 	import { Card, Paper, Text } from '@svelteuidev/core';
 	let results = [];
 </script>
