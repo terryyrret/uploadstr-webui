@@ -1,1 +1,10 @@
 node_modules
+.git
+build
+.eslint*
+.prettier*
+.git*
+README.md
+Dockerfile*
+public
+.svelte-kit
