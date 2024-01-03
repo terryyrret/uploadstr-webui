@@ -1,9 +1,11 @@
-FROM node:alpine AS build
+FROM node:12 AS build
 
 WORKDIR /app
 
-COPY . .
+COPY package.json ./
+COPY package-lock.json ./
 RUN npm install
+COPY . ./
 RUN npm run build
 
 FROM nginx:1.19-alpine
