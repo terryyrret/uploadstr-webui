@@ -1,38 +1,32 @@
-# create-svelte
+# uploadstr-webui
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+![](https://img.shields.io/badge/sveltekit-vite-blue.svg?logo=svelte)
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/terryyrret/uploadstr-webui/docker-image.yml)
+[![GitHub Issues](https://img.shields.io/github/issues/terryyrret/uploadstr.svg)](https://github.com/terryyrret/uploadstr-webui/issues)
+![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
+[![License](https://img.shields.io/badge/license-GNU_AGPL_v3-blue.svg)](https://opensource.org/license/agpl-v3/)
 
-## Creating a project
 
-If you're seeing this, you've probably already done this step. Congrats!
+A Web-UI that you can self-host and that can interface with a running instance of uploadstr. You can use this Web-UI to upload a file, delete a file, or view a list of files from your instance of uploadstr.
+You can check out my uploadstr repo at: <https://github.com/terryyrret/uploadstr>
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Features
+- Upload, delete, and view a list of files from a uploadstr service
+- Docker container to easily spin up and run service
 
-# create a new project in my-app
-npm create svelte@latest my-app
+## How to setup the docker container
+Here is a sample docker compose file. 
+
+docker-compose.yml
+``` yaml
+version: "3"
+services:
+  uploadstr-webui:
+    container_name: uploadstr-webui
+    image: ghcr.io/terryyrret/uploadstr-webui:latest
+    environment:
+      - PUBLIC_BASE_URL=https://img.yrret.me
+    restart: unless-stopped
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+All you need is just to set a value for the PUBLIC_BASE_URL environment variable. Set it to the base URL of the uploadstr instance you want the Web-UI to talk to.
