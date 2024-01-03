@@ -3,10 +3,8 @@ import { env } from '$env/dynamic/public';
 export async function uploadFile(file) {
 	const name = file.name;
 	const ext = name.indexOf('.') < 0 ? '' : name.split('.').pop();
-	const public_base_URL = env.PUBLIC_PUBLIC_BASE_URL;
-	const actual_base_URL = env.PUBLIC_ACTUAL_BASE_URL;
-	const public_url = `${public_base_URL}/upload`;
-	const actual_url = `${actual_base_URL}/upload`;
+	const base_URL = env.PUBLIC_BASE_URL;
+	const url = `${base_URL}/upload`;
 
 	function b2h(buffer) {
 		return Array.prototype.map
@@ -20,7 +18,7 @@ export async function uploadFile(file) {
 		kind: 27235,
 		created_at: Math.floor(Date.now() / 1000),
 		tags: [
-			['u', public_url],
+			['u', url],
 			['method', 'POST'],
 			['ext', ext],
 			['payload', FILE_HASH]
@@ -37,7 +35,7 @@ export async function uploadFile(file) {
 		body: file
 	};
 
-	let res = await fetch(actual_url, data);
+	let res = await fetch(url, data);
 	let text = await res.text();
 
 	return {
@@ -48,16 +46,14 @@ export async function uploadFile(file) {
 }
 
 export async function getFiles() {
-	const public_base_URL = env.PUBLIC_PUBLIC_BASE_URL;
-	const actual_base_URL = env.PUBLIC_ACTUAL_BASE_URL;
-	const public_url = `${public_base_URL}/list`;
-	const actual_url = `${actual_base_URL}/list`;
+	const base_URL = env.PUBLIC_BASE_URL;
+	const url = `${base_URL}/list`;
 	const event = {
 		content: '',
 		kind: 27235,
 		created_at: Math.floor(Date.now() / 1000),
 		tags: [
-			['u', public_url],
+			['u', url],
 			['method', 'GET']
 		]
 	};
@@ -70,21 +66,19 @@ export async function getFiles() {
 		}
 	};
 
-	return await fetch(actual_url, data);
+	return await fetch(url, data);
 }
 
 export async function deleteFile(fileUrl) {
 	const filename = fileUrl.split('/').pop();
-	const public_base_URL = env.PUBLIC_PUBLIC_BASE_URL;
-	const actual_base_URL = env.PUBLIC_ACTUAL_BASE_URL;
-	const public_url = `${public_base_URL}/delete`;
-	const actual_url = `${actual_base_URL}/delete`;
+	const base_URL = env.PUBLIC_BASE_URL;
+	const url = `${base_URL}/delete`;
 	const event = {
 		content: '',
 		kind: 27235,
 		created_at: Math.floor(Date.now() / 1000),
 		tags: [
-			['u', public_url],
+			['u', url],
 			['method', 'POST'],
 			['filename', filename]
 		]
@@ -98,5 +92,5 @@ export async function deleteFile(fileUrl) {
 		}
 	};
 
-	return await fetch(actual_url, data);
+	return await fetch(url, data);
 }
